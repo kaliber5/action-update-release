@@ -1,11 +1,67 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Update a Release by ID'
+description: 'Update a release given by its ID.'
+author: 'Simon Ihmig'
 inputs:
-  milliseconds: # change this
+  token:
+    description: The Github token used for authentication.
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+  owner:
+    description: Name of the owner of the repo, taken from current repo by default.
+    required: false
+  repo:
+    description: Name of the repository, taken from current repo by default.
+    required: false
+  id:
+    description: The ID to identify the release.
+    required: true
+  name:
+    description: Name of the release
+    required: false
+  body:
+    description: Body text of the release.
+    required: false
+  tag_name:
+    description: Tag name of the release.
+    required: false
+  target_commitish:
+    description: Specifies the commitish value that determines where the Git tag is created from. Can be any branch or commit SHA.
+    required: false
+  prerelease:
+    description: Mark this release as a pre-release.
+    required: false
+  draft:
+    description: Set to false to publish a draft release.
+    required: false
+outputs:
+  id:
+    description: The ID of the Release
+  url:
+    description: The release url
+  html_url:
+    description: The url users can navigate to in order to view the release
+  assets_url:
+    description: The release assets url
+  upload_url:
+    description: The url for uploading assets to the release
+  name:
+    description: The release name
+  body:
+    description: The release's body content
+  tag_name:
+    description: The git tag associated with the release
+  draft:
+    description: Is draft
+  prerelease:
+    description: Is pre-release
+  target_commitish:
+    description: The commitish value of the release
+  created_at:
+    description: Created date
+  published_at:
+    description: Published date
 runs:
   using: 'node12'
   main: 'dist/index.js'
+branding:
+  icon: tag
+  color: orange

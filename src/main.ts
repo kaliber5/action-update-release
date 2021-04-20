@@ -1,19 +1,22 @@
-import * as core from '@actions/core'
-import {wait} from './wait'
+import { setFailed, setOutput } from '@actions/core';
+import { getOctokit } from '@actions/github';
+import { getInputs, mapResponseToReleaseOutput } from './utils';
+import { updateRelease } from './release';
 
 async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`) // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
+    const { token, owner, repo, id, ...rest } = getInputs();
+    const octokit = getOctokit(token);
 
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+    const release = await updateRelease(octokit, owner, repo, id, rest);
 
-    core.setOutput('time', new Date().toTimeString())
+    const output = mapResponseToReleaseOutput(release);
+    for (const [key, value] of Object.entries(output)) {
+      setOutput(key, value);
+    }
   } catch (error) {
-    core.setFailed(error.message)
+    setFailed(error instanceof Error ? error.message : error);
   }
 }
 
-run()
+void run();
