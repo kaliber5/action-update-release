@@ -16,6 +16,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __webpack_require__(186);
 const github_1 = __webpack_require__(438);
@@ -24,38 +35,9 @@ const release_1 = __webpack_require__(878);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const { token, owner, repo, id, tag_name, latest, draft } = utils_1.getInputs();
+            const _a = utils_1.getInputs(), { token, owner, repo, id } = _a, rest = __rest(_a, ["token", "owner", "repo", "id"]);
             const octokit = github_1.getOctokit(token);
-            if (tag_name && latest) {
-                core_1.warning('Cannot use both latest and tag_name, ignoring tag_name!');
-            }
-            if (id && latest) {
-                core_1.warning('Cannot use both latest and id, ignoring id!');
-            }
-            if (id && tag_name) {
-                core_1.warning('Cannot use both id and tag_name, ignoring tag_name!');
-            }
-            if (draft && latest) {
-                core_1.warning('Cannot get latest release with draft=true, ignoring draft');
-            }
-            let release;
-            if (latest) {
-                release = yield release_1.getLatestRelease(octokit, owner, repo);
-            }
-            else if (id) {
-                release = yield release_1.getReleaseById(octokit, owner, repo, id);
-            }
-            else if (tag_name) {
-                if (draft) {
-                    release = yield release_1.getDraftReleaseByTagName(octokit, owner, repo, tag_name);
-                }
-                else {
-                    release = yield release_1.getReleaseByTagName(octokit, owner, repo, tag_name);
-                }
-            }
-            else {
-                throw new Error('Neither tag_name nor latest is set.');
-            }
+            const release = yield release_1.updateRelease(octokit, owner, repo, id, rest);
             const output = utils_1.mapResponseToReleaseOutput(release);
             for (const [key, value] of Object.entries(output)) {
                 core_1.setOutput(key, value);
@@ -86,60 +68,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getDraftReleaseByTagName = exports.getReleaseById = exports.getReleaseByTagName = exports.getLatestRelease = void 0;
+exports.updateRelease = void 0;
 const core_1 = __webpack_require__(186);
-function getLatestRelease(github, owner, repo) {
+function updateRelease(github, owner, repo, id, props) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            core_1.debug('Trying to fetch latest release');
-            return (yield github.repos.getLatestRelease({ owner, repo })).data;
+            core_1.debug('Trying to update release');
+            return (yield github.repos.updateRelease(Object.assign({ owner, repo, release_id: parseInt(id, 10) }, props))).data;
         }
         catch (e) {
-            throw new Error('Could not find latest release.');
+            throw new Error('Could not update the release.');
         }
     });
 }
-exports.getLatestRelease = getLatestRelease;
-function getReleaseByTagName(github, owner, repo, tag) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            core_1.debug(`Trying to fetch release for tag ${tag}`);
-            return (yield github.repos.getReleaseByTag({ owner, repo, tag })).data;
-        }
-        catch (e) {
-            throw new Error(`Could not find release for tag ${tag}.`);
-        }
-    });
-}
-exports.getReleaseByTagName = getReleaseByTagName;
-function getReleaseById(github, owner, repo, id) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            core_1.debug(`Trying to fetch release for ID ${id}`);
-            return (yield github.repos.getRelease({ owner, repo, release_id: parseInt(id, 10) })).data;
-        }
-        catch (e) {
-            throw new Error(`Could not find release for ID ${id}.`);
-        }
-    });
-}
-exports.getReleaseById = getReleaseById;
-function getDraftReleaseByTagName(github, owner, repo, tag) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            core_1.debug(`Trying to fetch draft release for tag ${tag}`);
-            const release = (yield github.repos.listReleases({ owner, repo })).data.find((listItem) => listItem.draft === true && listItem.tag_name === tag);
-            if (!release) {
-                throw new Error();
-            }
-            return release;
-        }
-        catch (e) {
-            throw new Error(`Could not find release for tag ${tag}.`);
-        }
-    });
-}
-exports.getDraftReleaseByTagName = getDraftReleaseByTagName;
+exports.updateRelease = updateRelease;
 
 
 /***/ }),
@@ -168,23 +110,21 @@ function getNormalizedInput(input, options = {}) {
  * Helper to get all the inputs for the action
  */
 function getInputs() {
-    const defaultTag = typeof github_1.context.ref === 'string' && github_1.context.ref.startsWith('refs/tags/')
-        ? github_1.context.ref.replace('refs/tags/', '')
-        : undefined;
     const result = {
         token: getNormalizedInput('token', { required: true }),
         owner: getNormalizedInput('owner', { default: github_1.context.repo.owner }),
         repo: getNormalizedInput('repo', { default: github_1.context.repo.repo }),
-        id: getNormalizedInput('id'),
-        tag_name: getNormalizedInput('tag_name', { default: defaultTag }),
-        latest: getNormalizedInput('latest', { default: false }),
-        draft: getNormalizedInput('draft', { default: false }),
+        id: getNormalizedInput('id', { required: true }),
+        name: getNormalizedInput('name'),
+        body: getNormalizedInput('body'),
+        prerelease: getNormalizedInput('prerelease', { type: 'boolean' }),
+        draft: getNormalizedInput('draft', { type: 'boolean' }),
     };
     return result;
 }
 exports.getInputs = getInputs;
 function mapResponseToReleaseOutput(response) {
-    var _a, _b;
+    var _a, _b, _c;
     return {
         id: response.id,
         url: response.url,
@@ -192,12 +132,13 @@ function mapResponseToReleaseOutput(response) {
         assets_url: response.assets_url,
         upload_url: response.upload_url,
         name: (_a = response.name) !== null && _a !== void 0 ? _a : '',
+        body: (_b = response.body) !== null && _b !== void 0 ? _b : '',
         tag_name: response.tag_name,
         draft: response.draft,
         prerelease: response.prerelease,
         target_commitish: response.target_commitish,
         created_at: response.created_at,
-        published_at: (_b = response.published_at) !== null && _b !== void 0 ? _b : '',
+        published_at: (_c = response.published_at) !== null && _c !== void 0 ? _c : '',
     };
 }
 exports.mapResponseToReleaseOutput = mapResponseToReleaseOutput;
