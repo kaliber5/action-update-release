@@ -1,13 +1,8 @@
-# Get Release Info
+# Update a release
 
-[![build-test](https://github.com/kaliber5/action-get-release/actions/workflows/test.yml/badge.svg)](https://github.com/kaliber5/action-get-release/actions/workflows/test.yml)
+[![build-test](https://github.com/kaliber5/action-update-release/actions/workflows/test.yml/badge.svg)](https://github.com/kaliber5/action-update-release/actions/workflows/test.yml)
 
-Github action to fetch release data. Supports querying by
-
-- release ID
-- latest release
-- tag name
-- tag name for draft releases
+Github action to update a Github release given by its ID. Can be used in combination with [`kaliber5/action-get-release`](https://github.com/kaliber5/action-get-release).
 
 ## Usage
 
@@ -21,7 +16,14 @@ jobs:
         uses: kaliber5/action-get-release@v1
         with:
           token: ${{ github.token }}
-          latest: true
+          latest: true 
+      - name: Get latest release
+        id: latest_release
+        uses: kaliber5/action-update-release@v1
+        with:
+          token: ${{ github.token }}
+          id: ${{ steps.latest_release.outputs.id }}
+          name: My changed release name
 ```
 
 ### Inputs
@@ -29,12 +31,13 @@ jobs:
 - `token`: The Github token used for authentication. Required, `${{ github.token }}` can be used usually.
 - `owner`: Name of the owner of the repo, taken from current repo by default.
 - `repo`: Name of the repository, taken from current repo by default.
-- `id`: The ID to identify the release.
-- `tag_name`: Tag name to identify the release.
-- `latest`: Will fetch the latest release if set to true.
-- `draft`: Set to true if you are looking for an unpublished draft release. In this case `tag_name` must also be set.
-
-One of `id`, `tag_name` or `latest` inputs must be provided
+- `id`: The ID to identify the release. Required!
+- `name`: Name of the release
+- `body`: Body text of the release.
+- `tag_name`: Tag name of the release.
+- `target_commitish`: Specifies the commitish value that determines where the Git tag is created from. Can be any branch or commit SHA.
+- `prerelease`: Mark this release as a pre-release.
+- `draft`: Set to false to publish a draft release.
 
 ### Outputs
 
@@ -44,6 +47,7 @@ One of `id`, `tag_name` or `latest` inputs must be provided
 - `assets_url`: The release assets url
 - `upload_url`: The url for uploading assets to the release
 - `name`: The release name
+- `body`: The release's body content
 - `tag_name`: The git tag associated with the release
 - `draft`: Is draft
 - `prerelease`: Is pre-release

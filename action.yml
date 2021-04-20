@@ -45,6 +45,8 @@ outputs:
     description: The url for uploading assets to the release
   name:
     description: The release name
+  body:
+    description: The release's body content
   tag_name:
     description: The git tag associated with the release
   draft:
