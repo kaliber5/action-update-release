@@ -7,11 +7,16 @@ export interface Inputs {
   token: string;
   owner: string;
   repo: string;
-  id?: string;
+  id: string;
+  name?: string;
+  body?: string;
   tag_name?: string;
-  latest: boolean;
-  draft: boolean;
+  target_commitish?: string;
+  prerelease?: boolean;
+  draft?: boolean;
 }
+
+export type UpdateableProperties = Omit<Inputs, 'token' | 'owner' | 'repo' | 'id'>;
 
 export type Release = RestEndpointMethodTypes['repos']['getLatestRelease']['response']['data'];
 
@@ -22,6 +27,7 @@ export interface ReleaseOutput {
   assets_url: string;
   upload_url: string;
   name: string;
+  body: string;
   tag_name: string;
   draft: boolean;
   prerelease: boolean;

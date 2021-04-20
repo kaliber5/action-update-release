@@ -29,18 +29,15 @@ function getNormalizedInput(
  * Helper to get all the inputs for the action
  */
 export function getInputs(): Inputs {
-  const defaultTag =
-    typeof context.ref === 'string' && context.ref.startsWith('refs/tags/')
-      ? context.ref.replace('refs/tags/', '')
-      : undefined;
   const result: Inputs = {
     token: getNormalizedInput('token', { required: true }),
     owner: getNormalizedInput('owner', { default: context.repo.owner }),
     repo: getNormalizedInput('repo', { default: context.repo.repo }),
-    id: getNormalizedInput('id'),
-    tag_name: getNormalizedInput('tag_name', { default: defaultTag }),
-    latest: getNormalizedInput('latest', { default: false }),
-    draft: getNormalizedInput('draft', { default: false }),
+    id: getNormalizedInput('id', { required: true }),
+    name: getNormalizedInput('name'),
+    body: getNormalizedInput('body'),
+    prerelease: getNormalizedInput('prerelease', { type: 'boolean'}),
+    draft: getNormalizedInput('draft', { type: 'boolean'}),
   };
 
   return result;
@@ -54,6 +51,7 @@ export function mapResponseToReleaseOutput(response: Release): ReleaseOutput {
     assets_url: response.assets_url,
     upload_url: response.upload_url,
     name: response.name ?? '',
+    body: response.body ?? '',
     tag_name: response.tag_name,
     draft: response.draft,
     prerelease: response.prerelease,

@@ -1,5 +1,5 @@
-name: 'Get Release Info'
-description: 'Get the meta data of the latest release or by id or tag, including draft releases.'
+name: 'Update a Release by ID'
+description: 'Update a release given by its ID.'
 author: 'Simon Ihmig'
 inputs:
   token:
@@ -13,15 +13,24 @@ inputs:
     required: false
   id:
     description: The ID to identify the release.
+    required: true
+  name:
+    description: Name of the release
+    required: false
+  body:
+    description: Body text of the release.
     required: false
   tag_name:
-    description: Tag name to identify the release.
+    description: Tag name of the release.
     required: false
-  latest:
-    description: Will fetch the latest release if set to true.
+  target_commitish:
+    description: Specifies the commitish value that determines where the Git tag is created from. Can be any branch or commit SHA.
+    required: false
+  prerelease:
+    description: Mark this release as a pre-release.
     required: false
   draft:
-    description: Set to true if you are looking for an unpublished draft release
+    description: Set to false to publish a draft release.
     required: false
 outputs:
   id:
@@ -43,7 +52,7 @@ outputs:
   prerelease:
     description: Is pre-release
   target_commitish:
-    description: The release was create to which target branch
+    description: The commitish value of the release
   created_at:
     description: Created date
   published_at:
