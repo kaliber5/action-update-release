@@ -19,20 +19,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: ./
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          id: true
       - name: Get latest release
-        id: latest_release
-        uses: kaliber5/action-get-release@v0.1.0
+        id: get_release
+        uses: kaliber5/action-get-release@v0.1.1
         with:
           token: ${{ github.token }}
           draft: true
           tag_name: v0.0.0
-      - name: Get latest release
-        uses: kaliber5/action-update-release@
+      - name: Update release
+        uses: ./
         with:
           token: ${{ github.token }}
-          id: ${{ steps.latest_release.output.id }}
+          id: ${{ steps.get_release.outputs.id }}
           body: This has been updated in the action's own CI for run ${{ github.run_id }} and commit SHA ${{ github.sha }}
