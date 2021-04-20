@@ -22,4 +22,17 @@ jobs:
       - uses: ./
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          latest: true
+          id: true
+      - name: Get latest release
+        id: latest_release
+        uses: kaliber5/action-get-release@v0.1.0
+        with:
+          token: ${{ github.token }}
+          draft: true
+          tag_name: v0.0.0
+      - name: Get latest release
+        uses: kaliber5/action-update-release@
+        with:
+          token: ${{ github.token }}
+          id: ${{ steps.latest_release.output.id }}
+          body: This has been updated in the action's own CI for run ${{ github.run_id }} and commit SHA ${{ github.sha }}

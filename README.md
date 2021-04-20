@@ -17,8 +17,7 @@ jobs:
         with:
           token: ${{ github.token }}
           latest: true 
-      - name: Get latest release
-        id: latest_release
+      - name: Update release
         uses: kaliber5/action-update-release@v1
         with:
           token: ${{ github.token }}
