@@ -33,10 +33,11 @@ describe('main', function () {
     };
 
     const { out, status } = await run(script, {
-      env: { ...env, INPUT_ID: '1', INPUT_NAME: 'NEW NAME', INPUT_BODY: 'NEW BODY' },
+      env: { ...env, INPUT_ID: '1', INPUT_NAME: 'NEW NAME', INPUT_BODY: 'NEW BODY', INPUT_TARGET_COMMITISH: 'master' },
       mocks,
     });
     const output = parseOutput(out);
+    // console.log(out);
 
     expect(status).toEqual(0);
     expect(output).toEqual(
