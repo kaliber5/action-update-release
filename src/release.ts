@@ -9,7 +9,7 @@ export async function updateRelease(
   props: UpdateableProperties
 ): Promise<Release> {
   try {
-    debug('Trying to update release');
+    debug(`Trying to update release ${id} with: ${JSON.stringify(props)}`);
     return (await github.repos.updateRelease({ owner, repo, release_id: parseInt(id, 10), ...props })).data;
   } catch (e) {
     throw new Error('Could not update the release.');
