@@ -33,3 +33,4 @@ jobs:
           id: ${{ steps.get_release.outputs.id }}
           body: This has been updated in the action's own CI for run ${{ github.run_id }} and commit SHA ${{ github.sha }}
           tag_name: v0.0.0
+          target_commitish: ${{ github.sha }}
