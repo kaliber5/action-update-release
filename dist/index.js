@@ -73,7 +73,7 @@ const core_1 = __webpack_require__(186);
 function updateRelease(github, owner, repo, id, props) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            core_1.debug('Trying to update release');
+            core_1.debug(`Trying to update release ${id} with: ${JSON.stringify(props)}`);
             return (yield github.repos.updateRelease(Object.assign({ owner, repo, release_id: parseInt(id, 10) }, props))).data;
         }
         catch (e) {
