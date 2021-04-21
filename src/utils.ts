@@ -36,8 +36,10 @@ export function getInputs(): Inputs {
     id: getNormalizedInput('id', { required: true }),
     name: getNormalizedInput('name'),
     body: getNormalizedInput('body'),
-    prerelease: getNormalizedInput('prerelease', { type: 'boolean'}),
-    draft: getNormalizedInput('draft', { type: 'boolean'}),
+    tag_name: getNormalizedInput('tag_name'),
+    target_commitish: getNormalizedInput('target_commitish'),
+    prerelease: getNormalizedInput('prerelease', { type: 'boolean' }),
+    draft: getNormalizedInput('draft', { type: 'boolean' }),
   };
 
   return result;

@@ -117,6 +117,8 @@ function getInputs() {
         id: getNormalizedInput('id', { required: true }),
         name: getNormalizedInput('name'),
         body: getNormalizedInput('body'),
+        tag_name: getNormalizedInput('tag_name'),
+        target_commitish: getNormalizedInput('target_commitish'),
         prerelease: getNormalizedInput('prerelease', { type: 'boolean' }),
         draft: getNormalizedInput('draft', { type: 'boolean' }),
     };
